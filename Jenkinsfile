@@ -11,7 +11,7 @@ pipeline {
 
     stage('Checkout Source') {
       steps {
-        git branch: 'main', url: 'https://github.com/Milstein/nodeapp.git'
+        git branch: 'main', url: 'https://github.com/nerc-project/nodeapp.git'
       }
     }
 
