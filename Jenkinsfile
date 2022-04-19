@@ -44,9 +44,9 @@ pipeline {
     }
 
     stage('Deploying App to Kubernetes') {      
-      steps {
-        sh "sed -i 's/nodeapp:latest/nodeapp:${env.BUILD_NUMBER}/g' deploymentservice.yml"
+      steps {        
         withKubeConfig([credentialsId: 'kubernetes']) {
+          sh "sed -i 's/nodeapp:latest/nodeapp:${env.BUILD_NUMBER}/g' deploymentservice.yml"
           sh 'kubectl apply -f deploymentservice.yml'
         }
       }
