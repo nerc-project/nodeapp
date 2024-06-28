@@ -17,10 +17,10 @@ pipeline {
     }
 
     stage('Build Image') {
-      steps{
+      steps {
         script {
           dockerImageName = "${registry}:${env.BUILD_NUMBER}"
-          dockerImage = docker.build dockerImageName
+          dockerImage = docker.build(dockerImageName)
         }
       }
     }
@@ -29,9 +29,9 @@ pipeline {
       environment {
         registryCredential = 'dockerhublogin'
       }
-      steps{
+      steps {
         script {
-          docker.withRegistry('https://registry.hub.docker.com', registryCredential){
+          docker.withRegistry('https://registry.hub.docker.com', registryCredential) {
             dockerImage.push()
           }
         }
@@ -40,12 +40,11 @@ pipeline {
 
     stage('Docker Remove Image') {
       steps {
-        sh "docker rmi -f ${dockerImageName}"
-        sh "docker rmi -f registry.hub.docker.com/${dockerImageName}"
+        sh returnStatus: true, script: 'docker rmi $(docker images | grep ${registry} | awk \'{print $3}\') --force'
       }
     }
 
-    stage('Deploying App to Kubernetes') {      
+    stage('Deploying App to Kubernetes') {
       steps {
         withKubeConfig([credentialsId: 'kubernetes']) {
           sh "sed -i 's/nodeapp:latest/nodeapp:${env.BUILD_NUMBER}/g' deploymentservice.yml"
