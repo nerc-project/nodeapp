@@ -1,7 +1,8 @@
 pipeline {
 
   environment {
-    dockerimagename = "milstein/nodeapp:${env.BUILD_NUMBER}"
+    registry = "milstein/nodeapp" // To push an image to Docker Hub, you must first name your local image using your Docker Hub username and the repository name that you created through Docker Hub on the web.
+    dockerImageName = ""
     dockerImage = ""
   }
 
@@ -15,10 +16,11 @@ pipeline {
       }
     }
 
-    stage('Build image') {
+    stage('Build Image') {
       steps{
         script {
-          dockerImage = docker.build dockerimagename
+          dockerImageName = "${registry}:${env.BUILD_NUMBER}"
+          dockerImage = docker.build dockerImageName
         }
       }
     }
@@ -38,8 +40,7 @@ pipeline {
 
     stage('Docker Remove Image') {
       steps {
-        sh "docker rmi -f ${dockerimagename}"
-        sh "docker rmi -f registry.hub.docker.com/${dockerimagename}"
+        sh "docker rmi -f ${dockerImageName}"
       }
     }
 
