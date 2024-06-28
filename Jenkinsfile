@@ -41,6 +41,7 @@ pipeline {
     stage('Docker Remove Image') {
       steps {
         sh "docker rmi -f ${dockerImageName}"
+        sh "docker rmi -f registry.hub.docker.com/${dockerImageName}"
       }
     }
 
